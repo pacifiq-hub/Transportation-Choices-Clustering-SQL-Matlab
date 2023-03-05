@@ -1,17 +1,13 @@
 /* 1. Statistics on the available data */
 
-/*
-The number of GPS records recorded during the campaign is obtained with the following SQL
-code:
-*/
+/* Total number of GPS records. */
+
 SELECT count (*)
 FROM GPS ;
 
 
-/*
-An important view for the project assigns to every record of the wlanrelation table its positional
-coordinates stored in the wnetworks table when they are available:
-*/
+/* Wi-Fi records and their position. */
+
 CREATE view mm_od_most_lilely_merged_wifi
 as
 SELECT 
@@ -30,7 +26,9 @@ WHERE
 	wn.id = wl. networkid;
 	
 
-/* All the WIFI records that are localized*/
+/* Number of Wi-Fi records that are localized. */
+
+-- All the WIFI records that are localized
 SELECT 
 	count (*)
 FROM 
@@ -38,8 +36,8 @@ FROM
 WHERE 
 	longitude IS NOT NULL
 
-/*The GPS table stores all the WLAN access points in a radius of 100m of at
-least one GPS point */
+--The GPS table stores all the WLAN access points in a radius of 100m of at
+--least one GPS point 
 SELECT 
 	count (*)
 FROM 
@@ -51,8 +49,7 @@ WHERE
 				 )
 				 
 				 
-/* For the histogram on GPS accuracy, as 14 millions records had to be split into four categories,
-we first used the following SQL code */
+/* GPS accuracy SQL code.*/
 
 SELECT 
 	cat,
@@ -89,4 +86,41 @@ FROM(
 GROUP BY cat ;
 
 
-/* 1. Identfication of the trip purpose */
+/* 2. Identfication of the trip purpose */
+
+/* Origins and destinations traveled by bus or metro. */
+
+SELECT 
+	st_x ( from_node_geom ),
+	st_y ( from_node_geom ),
+	st_x ( to_node_geom ),
+	st_y ( to_node_geom )
+FROM 
+	mm_seqs_mode
+WHERE 
+	mode IN (
+				'bus ',
+				'metro '
+			)
+			
+
+/* Number of users having home and work locations inside the Lausanne agglomeration */
+
+SELECT 
+	count (*)
+FROM 
+	(
+		SELECT 
+			user_id,
+			count (*)
+		FROM 
+			mm_centroids_homeandwork_locations
+		WHERE 
+			longitude < 6.8
+			AND longitude > 6.5
+			AND latitude < 46.6
+			AND latitude > 46.45
+		GROUP BY user_id
+	) t1
+WHERE 
+	count >= 2
