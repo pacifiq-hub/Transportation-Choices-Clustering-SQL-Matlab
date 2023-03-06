@@ -117,10 +117,58 @@ FROM
 			mm_centroids_homeandwork_locations
 		WHERE 
 			longitude < 6.8
-			AND longitude > 6.5
-			AND latitude < 46.6
-			AND latitude > 46.45
+		AND longitude > 6.5
+		AND latitude < 46.6
+		AND latitude > 46.45
 		GROUP BY user_id
 	) t1
 WHERE 
 	count >= 2
+	
+
+/* 3. Trip detection */
+
+/* Wi-Fi records assigned with the meaning home and work. */
+
+--This view contains all the WI􀀀FI records localized for the 26 full
+--time workers of our dataset on weekdays 
+
+CREATE OR REPLACE VIEW 
+	PUBLIC.mm_wifi_poi_homeandwork_locations AS
+	
+		SELECT 
+			w. user_id,
+			w. time_stamp,
+			w. longitude,
+			w. latitude, 
+			st_distance ( 
+							GEOGRAPHY 
+								( 
+									st_makepoint 
+										(
+											c. longitude, 
+											c. latitude 
+										)
+								),
+							w. geog
+						) AS distance,
+			c. cluster_meaning
+		FROM 
+			mm_od_most_lilely_merged_wifi w, 
+			mm_centroids_homeandwork_locations c
+		WHERE 
+			w. user_id = c. user_id
+		AND w. latitude IS NOT NULL
+		AND (c. user_id = ANY 	( 
+								ARRAY 	[5943,5944,5949,5950,5957,5959,5963,5974,59
+										79,5980,6001,6002,6007,6010,6039,6040,6069,6075,6077,6090,6103,610
+										4,6109,6170,6171,6198]
+								)
+			)
+		AND 
+			st_distance ( GEOGRAPHY ( st_makepoint (c. longitude , c. latitude )), w.geog ) <= c. accuracy
+		AND date_part ('dow ':: TEXT , w. time_stamp ) >= 1:: DOUBLE PRECISION
+		AND date_part ('dow ':: TEXT , w. time_stamp ) <= 5:: DOUBLE PRECISION
+		ORDER BY 
+			w. user_id,
+			w. time_stamp ;
