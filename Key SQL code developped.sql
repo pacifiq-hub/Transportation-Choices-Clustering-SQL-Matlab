@@ -130,7 +130,7 @@ WHERE
 
 /* Wi-Fi records assigned with the meaning home and work. */
 
---This view contains all the WI􀀀FI records localized for the 26 full
+--This view contains all the WI-FI records localized for the 26 full
 --time workers of our dataset on weekdays 
 
 CREATE OR REPLACE VIEW 
@@ -172,3 +172,120 @@ CREATE OR REPLACE VIEW
 		ORDER BY 
 			w. user_id,
 			w. time_stamp ;
+
+
+
+
+
+/* Home and Work trips. */
+
+CREATE OR REPLACE 
+	VIEW PUBLIC.mm_wifi_trips_homeandwork_locations AS
+		SELECT 
+			row_number () OVER 
+								(ORDER BY 
+									t4.user_id,
+									t4. departure_time
+								) AS trip_id, 
+			t4. user_id,
+			t4. departure_time,
+			t4. arrival_time,
+			t4. arrival_time - t4. departure_time AS travel_time,
+			t4. from_location,
+			t4. to_location
+		FROM 
+			(
+				SELECT 
+					t3. user_id, 
+					t3. time_stamp AS departure_time,
+					t3. cluster_meaning AS from_location,
+					lead (t3. time_stamp ) 
+										OVER 
+											(
+											PARTITION BY t3. user_id 
+											ORDER BY t3. time_stamp
+											) AS arrival_time,
+					lead (t3. cluster_meaning ) 
+										OVER 
+											(
+											PARTITION BY t3. user_id 
+											ORDER BY t3. time_stamp
+											) AS to_location,
+					t3. is_start
+				FROM 
+					(
+						SELECT 
+						t2. user_id,
+						t2. time_stamp,
+						t2. cluster_meaning,
+						t2. previous_cluster_meaning,
+						t2. next_cluster_meaning,
+						t2. is_end,
+						t2. is_start
+					FROM 
+						(
+							SELECT 
+								t. user_id,
+								t. time_stamp,
+								t. cluster_meaning,
+								t. previous_cluster_meaning,
+								t. next_cluster_meaning,
+								CASE
+									WHEN 
+										t. cluster_meaning != t. previous_cluster_meaning
+									THEN 
+										1
+									ELSE 
+										0
+									END AS is_end,
+								CASE
+									WHEN 
+										t. cluster_meaning != t. next_cluster_meaning
+									THEN 
+										1
+									ELSE 
+										0
+									END AS is_start
+							FROM 
+								(
+									SELECT 
+										w. user_id,
+										w. time_stamp,
+										w. cluster_meaning,
+										lag (w. cluster_meaning ) OVER 
+																		(
+																		PARTITION BY w. user_id 
+																		ORDER BY w. time_stamp
+																		) AS previous_cluster_meaning,
+										lead (w. cluster_meaning ) OVER 
+																		(
+																		PARTITION BY w. user_id 
+																		ORDER BY w. time_stamp
+																		) AS next_cluster_meaning
+									FROM 
+										mm_wifi_poi_homeandwork_locations w
+									ORDER BY 
+										w. user_id,
+										w. time_stamp
+								) t
+							ORDER BY 
+								t. user_id,
+								t. time_stamp
+						) t2
+					WHERE 
+						t2. is_end = 1
+					OR 
+						t2. is_start = 1
+					ORDER BY 
+						t2. user_id,
+						t2. time_stamp
+					) t3
+				ORDER BY 
+					t3. user_id,
+					t3. time_stamp
+			) t4
+		AND 
+			t4. is_start = 1
+		ORDER BY 
+			t4. user_id,
+			t4. arrival_time - t4. departure_time DESC ;
