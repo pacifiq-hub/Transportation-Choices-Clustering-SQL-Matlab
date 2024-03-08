@@ -22,6 +22,34 @@ results are consistent with intuition and relevant works from the literature, sh
 feasibility and potential of using smartphones for mode choice analysis. A smartphone
 dataset collected in Lausanne is used to illustrate the issues and estimate the model.
 
+## ![#f03c15](https://placehold.co/15x15/f03c15/f03c15.png) Available data 
+
+In the late autumn 2008, the Nokia research center Lausanne (NRC) concludes that no
+public dataset is matching its internal research needs which has triggered the motivation
+to collect a comprehensive dataset gathering as much information as possible about
+people, places and the interaction between people and places. Two years later, the data
+collection campaign begins, involving a sample of 174 participants provided with smartphones
+and ending in September 2011, a little over 20 months.
+
+![image](https://github.com/pacifiq-hub/Mode-Transportation-Choices-Clustering-Logit/assets/46910395/c16047df-1d46-4d69-a2a1-4198cd487751)
+
+The different data modalities collected with the client can be partitioned into 3 main categories:
+ - **Position data**: GPS (when available), WLAN access point information (when
+available), acceleration and cellular network information.
+- **Social interaction data**: Call logs, short message logs and Bluetooth scanning
+results.
+- **Media creation data**: Locations where images have been captured, video shot,
+music played. And information on Applications used with the Symbian OS.
+Once uploaded in the server, data is anonymized by clearing real names of the users,
+phone numbers, calendar information, Bluetoot, WLAN MAC addresses 2 and acoustic
+data.
+
+The quantity of data collected with the devices at the end of the campaign is large:
+- 14 million GPS tags are recorded with different levels of accuracy within a range
+from 5 meters to 400 meters.
+- 44 million Wi-Fi records are collected and 77 % of this amount is localized.
+
+
 ## ![#c5f015](https://placehold.co/15x15/c5f015/c5f015.png) Discrete Choice Model 
 
 Discrete choice models are used in transportation research among other numerous applications
@@ -43,7 +71,7 @@ agent being the person, household or business making the choice.
 
 
 
-βni are unknown parameters to be estimated with the data.εni captures the remaining factors
+βni are unknown parameters to be estimated with the data. εni captures the remaining factors
 that are not included as observed variables. This error term can come from various
 sources (preferences are not homogeneous, incomplete information about the attributes
 of the alternatives such as comfort, measurement errors, etc.). 
@@ -180,4 +208,7 @@ OFS et al. (2010).
 In a context where smartphones are revolutionazing the way data is collected, we showed
 the feasibility and potential of using smartphone data in the context of discrete choice
 analysis.
+
+for more details on the bibliography, [check the final technical report](https://github.com/pacifiq-hub/Mode-Transportation-Choices-Clustering-Logit/blob/main/technical%20report.pdf).
+
 #  
