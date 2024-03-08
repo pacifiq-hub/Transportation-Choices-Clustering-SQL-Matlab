@@ -1,4 +1,4 @@
-# Mode-Transportation-Choices-Clustering-Logit-
+# Mode-Transportation-Choices-Clustering-Logit
 
 This project is very dear to me, it dates back to June 2014. At that time, I was still a master's student publishing my master's thesis for the [Trans-OR laboratory at EPFL](https://transp-or.epfl.ch/research.php#:~:text=We%20identify%20new%20solutions%20to,the%20system%20as%20a%20whole.). I have always admired its director [Professor Michael Berliaire](https://en.wikipedia.org/wiki/Michel_Bierlaire), who gave me the passion I have today for data and its unlimited potential. At that time, the term _data science_ was very new, and my engineering school didn't have a specialized master's in that field. Research laboratories were the way to go to get proper learning in data, and access to huge datasets.
 
